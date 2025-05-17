@@ -1,0 +1,17 @@
+# Use official Node.js base image
+FROM node:18-bullseye
+
+# Set working directory inside the container
+WORKDIR /app
+
+# Copy only package.json and lock file first for better caching
+COPY package*.json ./
+
+# Install dependencies (use --legacy-peer-deps if needed)
+RUN npm install --legacy-peer-deps
+
+# Copy all remaining frontend files
+COPY . .
+
+# Start the Vite dev server
+CMD ["npm", "run", "dev"]

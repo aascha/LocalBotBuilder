@@ -1,0 +1,40 @@
+# ─────────────────────────────
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db-journal
+
+# Virtual Environment
+venv/
+
+# ─────────────────────────────
+# Node / Vue
+node_modules/
+dist/
+frontend/.vite/
+
+# ─────────────────────────────
+# Databases
+*.db
+
+# ─────────────────────────────
+# System / Editor files
+.DS_Store
+.env
+.vscode/
+
+# ─────────────────────────────
+# Old top-level folders (safety)
+data/
+generated_bots/
+index_storage/
+uploaded_files/
+
+# ─────────────────────────────
+# App-level generated content
+app/__pycache__/
+app/uploaded_files/temp_*/
+app/index_storage/*
+app/generated_bots/*
