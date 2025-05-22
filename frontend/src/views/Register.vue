@@ -4,7 +4,7 @@
       <header class="nav-bar">
       <!-- Logo navigates to landing -->
       <router-link to="/">
-        <img src="../logo_full.png" alt="Logo" class="top-logo" />
+        <img src="../assets/logo_full.svg" alt="Logo" class="top-logo" />
       </router-link>
       <button class="nav-btn light" @click="goToLogin">Anmelden</button>
     </header>

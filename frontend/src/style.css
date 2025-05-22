@@ -547,3 +547,19 @@ body {
   font-weight: bold;
   color: #555;
 }
+
+.progress-container {
+  width: 100%;
+  background: #eee;
+  border-radius: 5px;
+  margin-top: 1rem;
+  overflow: hidden;
+  height: 24px;
+  position: relative;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(to right, #3b82f6, #60a5fa);
+  transition: width 0.3s ease;
+}

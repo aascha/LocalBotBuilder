@@ -9,10 +9,6 @@ services:
       - "5000:5000"
     volumes:
       - ./backend:/app
-      - ./backend/data:/app/data                # ✅ ADD THIS
-      - ./backend/generated_bots:/app/generated_bots
-      - ./backend/uploaded_files:/app/uploaded_files
-      - ./backend/index_storage:/app/index_storage
     depends_on:
       - ollama
 

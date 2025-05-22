@@ -94,10 +94,15 @@
         <button class="generate-btn" @click="generate" :disabled="loading">
           Generieren
         </button>
+        <div v-if="loading" class="progress-container">
+          <div class="progress-bar" :style="{ width: progress + '%' }"></div>
+          <p>Datei wird verarbeitet... {{ progress }}%</p>
+        </div>
+
 
         <!-- loading indicator -->
         <div v-if="loading" class="loading-indicator">
-          ⏳ Bot wird erstellt und Datei wird verarbeitet...
+          Bot wird erstellt und Datei wird verarbeitet...
         </div>
       </main>
     </div>
@@ -114,6 +119,8 @@ const model = ref("gpt-4o");
 const menuOpen = ref(false);
 const sideBarActive = ref(false);
 const loading = ref(false);
+const progress = ref(0);
+let progressInterval = null;
 
 const tags = ref([
   { label: "Einfache Antworten", selected: true },
@@ -121,7 +128,6 @@ const tags = ref([
   { label: "Motivierend", selected: false },
   { label: "Detailliert", selected: false },
   { label: "Versichernd", selected: false },
-  { label: "...", selected: false },
   { label: "Freundlich", selected: false },
   { label: "Professionell", selected: false },
   { label: "Nachvollziehbar", selected: false },
@@ -158,6 +164,14 @@ async function generate() {
   }
 
   loading.value = true;
+  progress.value = 0;
+
+  // ⏳ Simulate progress increasing every 200ms
+  progressInterval = setInterval(() => {
+    if (progress.value < 90) {
+      progress.value += 5;
+    }
+  }, 200);
 
   try {
     const res = await fetch("/api/create", {
@@ -166,17 +180,18 @@ async function generate() {
     });
 
     const text = await res.text();
+    progress.value = 100;
     alert(text);
-    console.log("✅ Flask response:", text);
-
     router.push("/chat");
   } catch (err) {
     console.error("❌ Error creating bot:", err);
     alert("❌ Fehler beim Erstellen des Bots.");
   } finally {
+    clearInterval(progressInterval);
     loading.value = false;
   }
 }
+
 
 const file = ref(null);
 const fileInput = ref(null);

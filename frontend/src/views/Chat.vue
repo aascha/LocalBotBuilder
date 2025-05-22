@@ -3,7 +3,7 @@
     <!-- header -->
     <header class="nav-bar">
       <router-link to="/" class="logo-link">
-        <img src="../logo_full.png" alt="Logo" class="top-logo" />
+        <img src="../assets/logo_full.svg" alt="Logo" class="top-logo" />
       </router-link>
       <div class="avatar-icon" @click="toggleMenu">👤</div>
       <ul v-if="menuOpen" class="menu-dropdown">
