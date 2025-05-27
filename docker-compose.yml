@@ -1,4 +1,4 @@
-version: '3.9'
+version: '3.9'  # Still supported, but optional
 
 services:
   bot_creator:
@@ -8,9 +8,19 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./backend:/app
+      - ./backend:/app  # Good for live reload during development
     depends_on:
       - ollama
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+    # Optional: Enable BuildKit cache for faster builds in the future
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile.app
+    #   cache_from:
+    #     - type=local,src=/tmp/.buildx-cache
+    #   cache_to:
+    #     - type=local,dest=/tmp/.buildx-cache
 
   frontend:
     build:
@@ -20,7 +30,9 @@ services:
       - "5173:5173"
     volumes:
       - ./frontend:/app
-      - /app/node_modules
+      - /app/node_modules  # Prevents host node_modules from overwriting container's
+    working_dir: /app
+    command: ["npm", "run", "dev"]
 
   ollama:
     image: ollama/ollama
@@ -28,6 +40,7 @@ services:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama
+    # Optional: Persist models if you pull big ones
 
 volumes:
   ollama_data:

@@ -4,8 +4,8 @@
       <aside class="sidebar">
         <!-- replace sidebar-icon.svg with your own -->
         <img src="../assets/sidebar-icon.svg" class="sidebar-icon" alt="Menu" />
-        <button class="side-btn" @click="$router.push('/create')">Bot erstellen</button>
-        <button class="side-btn" @click="$router.push('/chat')">Meine Bots</button>
+        <router-link to="/create" class="nav-button">Bot erstellen</router-link>
+        <router-link to="/botoverview" class="nav-button">Meine Bots</router-link>
       </aside>
   
       <!-- Content card -->

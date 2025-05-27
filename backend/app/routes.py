@@ -8,7 +8,7 @@ from .models import BotHistory
 
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
 from llama_index.llms.ollama import Ollama
-from llama_index.embeddings.ollama import OllamaEmbedding
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
 bp = Blueprint('main', __name__)
 
@@ -66,23 +66,23 @@ def create():
 
         uploaded_filename = None
         if file and file.filename:
-            # ✅ Create a temp folder just for this file
+            #  Create a temp folder just for this file
             temp_folder = os.path.join(current_app.config['UPLOAD_FOLDER'], f"temp_{bot_name.replace(' ', '_')}")
             os.makedirs(temp_folder, exist_ok=True)
 
-            # ✅ Save file there
+            #  Save file there
             uploaded_path = os.path.join(temp_folder, file.filename)
             file.save(uploaded_path)
 
-            # ✅ Index that file only
+            #  Index that file only
             reader = SimpleDirectoryReader(input_dir=temp_folder)
             documents = reader.load_data()
-            print("📄 DOCUMENTS:", documents)
+            print(" DOCUMENTS:", documents)
 
 
             ollama_url = os.getenv("OLLAMA_BASE_URL", "http://ollama:11434")
             llm = Ollama(model=model_name, base_url=ollama_url)
-            embed_model = OllamaEmbedding(model_name="nomic-embed-text", base_url=ollama_url)
+            embed_model = HuggingFaceEmbedding(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
             index = VectorStoreIndex.from_documents(documents, llm=llm, embed_model=embed_model)
 
@@ -92,7 +92,7 @@ def create():
 
             uploaded_filename = file.filename
 
-        # ✅ Save metadata to DB
+        #  Save metadata to DB
         bot = BotHistory(
             bot_name=bot_name,
             model_name=model_name,
@@ -107,12 +107,12 @@ def create():
         db.session.add(bot)
         db.session.commit()
 
-        print("✅ BOT SAVED TO DB:", bot.bot_name)
-        return f"✅ Bot '{bot_name}' created successfully!"
+        print(" BOT SAVED TO DB:", bot.bot_name)
+        return f" Bot '{bot_name}' created successfully!"
 
     except Exception as e:
-        print("❌ ERROR during bot creation:", e)
-        return "❌ Failed to create bot", 500
+        print(" ERROR during bot creation:", e)
+        return " Failed to create bot", 500
 
 
 
@@ -132,14 +132,22 @@ def build_model():
         })
 
         if response.status_code == 200:
-            return f"<h1>✅ Model '{model_name}' created successfully!</h1><pre>{response.text}</pre><a href='/'>Back</a>"
+            return f"<h1> Model '{model_name}' created successfully!</h1><pre>{response.text}</pre><a href='/'>Back</a>"
         else:
-            return f"<h1>❌ Failed to create model '{model_name}'</h1><pre>{response.text}</pre><a href='/'>Try Again</a>"
+            return f"<h1> Failed to create model '{model_name}'</h1><pre>{response.text}</pre><a href='/'>Try Again</a>"
 
     except Exception as e:
-        return f"<h1>❌ Unexpected Error</h1><pre>{str(e)}</pre><a href='/'>Back</a>"
+        return f"<h1> Unexpected Error</h1><pre>{str(e)}</pre><a href='/'>Back</a>"
+
+from flask import jsonify
 
 @bp.route('/api/history')
 def history():
     bots = BotHistory.query.all()
-    return render_template('history.html', bots=bots)
+    bots_data = [{
+        "bot_name": bot.bot_name,
+        "model_name": bot.model_name,
+        "tone": bot.tone,
+        "system_prompt": bot.system_prompt
+    } for bot in bots]
+    return jsonify(bots_data)

@@ -17,8 +17,8 @@
           @click.stop="toggleSidebar"
         />
       </div>
-      <button class="nav-button" @click="goToBuilder">Bot erstellen</button>
-      <button class="nav-button">Meine Bots</button>
+      <router-link to="/create" class="nav-button">Bot erstellen</router-link>
+      <router-link to="/botoverview" class="nav-button">Meine Bots</router-link>
     </aside>
     <!-- Main Content -->
     <main class="main-content">

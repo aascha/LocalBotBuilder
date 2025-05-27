@@ -6,7 +6,8 @@ __pycache__
 *.sqlite3
 *.log
 .env
-Dockerfile*
-docker-compose.yml
+# Don't ignore these unless you're copying from a subdir
+# Dockerfile
+# docker-compose.yml
 node_modules
 .vscode

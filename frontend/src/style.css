@@ -1,5 +1,8 @@
 * {
   font-family: "Inter", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
@@ -18,7 +21,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
+  padding: 0.3rem 2rem;
   background-color: white;
   border-bottom: 1px solid #e0e0e0;
 }
@@ -135,6 +138,7 @@ body {
   height: 54px;
   object-fit: contain;
   cursor: pointer;
+  margin-left: -50px;
 }
 
 /* Centered login box */
@@ -229,13 +233,14 @@ body {
 }
 .user-icon {
   height: 40px;
-  width: 0px;
+  width: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #83deff;
   cursor: pointer;
+  margin-right: 20%;
 }
 .menu-dropdown {
   position: absolute;
@@ -321,13 +326,16 @@ body {
 
 /* description box */
 .desc-box {
+  display: flex;
+  flex-direction: column;
+
   position: relative;
   width: 100%;
   max-width: 600px;
   margin: 0 auto 2rem;
   border: 1px solid #38bdf8;
   border-radius: 40px;
-  padding: 1rem 1.5rem 2.5rem;
+  padding: 3rem 1.5rem 1rem 3rem;
   background: white;
 }
 
@@ -338,6 +346,8 @@ body {
   font-size: 1.25rem;
   color: #38bdf8;
   cursor: pointer;
+  padding-top: 35px;
+  padding-left: 5px;
 }
 .desc-input {
   width: 100%;
@@ -360,6 +370,7 @@ body {
   right: 1.5rem;
   font-size: 0.875rem;
   color: #475569;
+  border-top: 1px solid #e5e7eb;
 }
 .desc-footer select {
   border: none;
@@ -462,11 +473,9 @@ body {
   margin: auto;
   margin-top: 20px;
   width: 800px;
-  height: 560px;
-
+  height: 570px;
   background-color: #f5f5f5;
   padding: 10px;
-
   border-radius: 20px;
   border: 1px solid #e5e7eb;
 }
@@ -476,9 +485,14 @@ body {
   padding: 5px;
   width: 100%;
   max-width: 700px; /* Limit width for better readability */
+  padding: 25px 0;
 
   text-align: center;
   color: #0076a2;
+}
+
+input[type="radio"] {
+  margin-right: 25px;
 }
 
 .answers-wrapper {
@@ -499,6 +513,25 @@ body {
   width: 600px;
 }
 
+.option-description {
+  margin-left: 40px;
+}
+
+.suggested-model {
+  background-color: #83deff; /* or any other color you prefer */
+  border: 1px solid #0076a2;
+  border-radius: 5px;
+}
+
+.suggestedModel {
+  background-color: #f5f5f5;
+  padding: 15px 15px;
+  border-radius: 8px;
+  margin: 10px 0;
+  cursor: pointer;
+  border: 1px solid #e5e7eb;
+  width: 600px;
+}
 .quiz-button-container {
   display: flex;
   flex-direction: column;
@@ -542,24 +575,112 @@ body {
   width: 230px;
 }
 
-.loading-indicator {
-  margin-top: 1rem;
-  font-weight: bold;
-  color: #555;
+.bot-overview-page {
+  background-color: #f5f5f5;
+  min-height: 150vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.progress-container {
-  width: 100%;
-  background: #eee;
-  border-radius: 5px;
-  margin-top: 1rem;
+.bot-overview-box {
+  background-color: white;
+  width: 80%;
+  margin: 2% auto;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.bot-overview-box h2 {
+  color: #0076a2;
+  text-align: left;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.5rem;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.bot-card {
+  background-color: #fff;
+  border-radius: 8px;
   overflow: hidden;
-  height: 24px;
-  position: relative;
+  text-align: left;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease;
+  cursor: pointer;
 }
 
-.progress-bar {
-  height: 100%;
-  background: linear-gradient(to right, #3b82f6, #60a5fa);
-  transition: width 0.3s ease;
+.bot-card:hover {
+  transform: translateY(-5px);
+}
+
+.bot-image img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.bot-info h3 {
+  font-size: 18px;
+  font-weight: bold;
+  color: #0076a2;
+  margin-bottom: 0.5rem;
+}
+
+.bot-info p {
+  font-size: 14px;
+  color: #333;
+}
+
+.bottom-bar {
+  width: 100%;
+  background-color: #f5f5f5;
+  color: #000;
+  padding: 10px;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.bottom-bar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.bottom-bar li {
+  display: inline-block;
+  margin-right: 20px;
+}
+
+.bottom-bar a {
+  color: #000;
+  text-decoration: none;
+}
+
+.bottom-bar a:hover {
+  color: #888;
+}
+
+.nav-button {
+  display: block;
+  background-color: #0076a2;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  text-align: center;
+  margin-bottom: 10px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.nav-button:hover {
+  background-color: #005f86;
 }

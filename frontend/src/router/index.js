@@ -11,6 +11,9 @@ import Questionnaire2 from "../views/Questionnaire2.vue";
 import Questionnaire3 from "../views/Questionnaire3.vue";
 import Questionnaire4 from "../views/Questionnaire4.vue";
 import Questionnaire5 from "../views/Questionnaire5.vue";
+import Questionnaire4_expert from "../views/Questionnaire4_expert.vue";
+import BotOverview from "../views/BotOverview.vue";
+
 
 const routes = [
   { path: "/", component: Landing },
@@ -25,6 +28,9 @@ const routes = [
   { path: "/questionnaire3", component: Questionnaire3 },
   { path: "/questionnaire4", component: Questionnaire4 },
   { path: "/questionnaire5", component: Questionnaire5 },
+  { path: "/questionnaire4_expert", component: Questionnaire4_expert },
+  { path: "/botoverview", component: BotOverview },
+
 ];
 
 export default createRouter({
