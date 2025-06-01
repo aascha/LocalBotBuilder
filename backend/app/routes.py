@@ -2,10 +2,11 @@ import os
 import zipfile
 from datetime import datetime
 import requests
-from flask import Blueprint, request, send_from_directory, current_app, jsonify, send_file
+from flask import Blueprint, request, send_from_directory, current_app, jsonify, send_file, session
 
 from . import db
-from .models import BotHistory
+from .models import BotHistory, User
+from sqlalchemy.exc import IntegrityError
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
 from llama_index.llms.ollama import Ollama
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
@@ -31,10 +32,73 @@ def serve_vue_app(path):
     file_path = os.path.join(static_dir, path)
     return send_from_directory(static_dir, path if os.path.exists(file_path) else "index.html")
 
+@bp.route('/api/register', methods=['POST'])
+def register_user():
+    data = request.json
+    name = data.get('name')
+    email = data.get('email')
+    password = data.get('password')
+
+    if not name or not email or not password:
+        return jsonify({'error': 'Please fill out all fields.'}), 400
+
+    if User.query.filter_by(email=email).first():
+        return jsonify({'error': 'Email already exists.'}), 400
+
+    new_user = User(fullname=name, email=email)
+    new_user.set_password(password)
+
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({'message': 'User registered successfully'}), 201
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({'error': 'Registration failed.'}), 500
+    
+
+@bp.route('/api/login', methods=['POST'])
+def login_user():
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+
+    user = User.query.filter_by(email=email).first()
+
+    if user and user.check_password(password):
+        session['user_id'] = user.id  # Store user ID in session
+        return jsonify({'message': 'Login successful'}), 200
+    else:
+        return jsonify({'error': 'Invalid email or password'}), 401
+    
+@bp.route('/api/logout', methods=['POST'])
+def logout_user():
+    session.pop('user_id', None)  # Remove user_id from session if it exists
+    return jsonify({'message': 'Logout successful'}), 200
+
+
+@bp.route('/api/me')
+def current_user():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'user': None}), 200
+
+    user = User.query.get(user_id)
+    return jsonify({'user': {
+        'id': user.id,
+        'name': user.fullname,
+        'email': user.email
+    }})
+
+
 
 @bp.route('/api/create', methods=['POST'])
 def create_bot():
     try:
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({'error': 'Unauthorized'}), 401
+
         form = request.form
         file = request.files.get('file')
 
@@ -51,7 +115,6 @@ def create_bot():
         filename = f"{bot_name.replace(' ', '_')}_modelfile.txt"
         filepath = os.path.join(current_app.config['GENERATED_FOLDER'], filename)
 
-        # Write model config to file
         with open(filepath, "w", newline='\n') as f:
             f.write("\n".join([
                 f"FROM {model_name}",
@@ -83,7 +146,7 @@ def create_bot():
 
             uploaded_filename = file.filename
 
-        # Save to DB
+        # Store with user ID
         bot = BotHistory(
             bot_name=bot_name,
             model_name=model_name,
@@ -93,7 +156,8 @@ def create_bot():
             filename=filename,
             indexed_file=uploaded_filename,
             tone=tone,
-            timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            user_id=user_id  # ✅ link to logged-in user
         )
         db.session.add(bot)
         db.session.commit()
@@ -142,7 +206,11 @@ def build_model():
 
 @bp.route('/api/history')
 def history():
-    bots = BotHistory.query.all()
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    bots = BotHistory.query.filter_by(user_id=user_id).all()
     return jsonify([{
         "bot_name": b.bot_name,
         "model_name": b.model_name,

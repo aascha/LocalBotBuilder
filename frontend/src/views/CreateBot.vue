@@ -1,19 +1,16 @@
 <template>
   <div class="create-page-builder">
-    <!-- header -->
+    <!-- Header -->
     <header class="nav-bar">
       <router-link to="/" class="logo-link">
         <img src="../assets/logo_full.svg" alt="Logo" class="top-logo" />
       </router-link>
+
       <div class="user-menu">
-        <div class="avatar-icon" @click="openMenu">
-          <font-awesome-icon
-            icon="circle-user"
-            class="user-icon"
-            @click="Logout"
-          />
+        <div class="user-name" @click="openMenu">
+          {{ user?.name || 'Lade...' }}
         </div>
-        <ul v-if="menuOpen" class="menu-dropdown">
+        <ul v-if="menuOpen" class="menu-dropdown" @click.stop>
           <li @click="logout">Logout</li>
         </ul>
       </div>
@@ -33,13 +30,12 @@
         <router-link to="/botoverview" class="nav-button">Meine Bots</router-link>
       </aside>
 
-      <!-- main form -->
+      <!-- Main Bot Creation Section -->
       <main class="create-container">
         <h2 class="create-title">
           Erstelle deinen<br />personalisierten Chatbot
         </h2>
 
-        <!-- name -->
         <input
           v-model="name"
           type="text"
@@ -47,7 +43,6 @@
           placeholder="Gib mir einen Namen!"
         />
 
-        <!-- style tags -->
         <div class="tag-row">
           <button
             v-for="(t, i) in tags"
@@ -60,7 +55,6 @@
           </button>
         </div>
 
-        <!-- description box -->
         <div class="desc-box">
           <div class="upload-btn" @click="triggerFileInput">
             <img src="../assets/upload.svg" alt="upload" class="upload-icon" />
@@ -90,17 +84,15 @@
           </div>
         </div>
 
-        <!-- generate button -->
         <button class="generate-btn" @click="generate" :disabled="loading">
           Generieren
         </button>
+
         <div v-if="loading" class="progress-container">
           <div class="progress-bar" :style="{ width: progress + '%' }"></div>
           <p>Datei wird verarbeitet... {{ progress }}%</p>
         </div>
 
-
-        <!-- loading indicator -->
         <div v-if="loading" class="loading-indicator">
           Bot wird erstellt und Datei wird verarbeitet...
         </div>
@@ -110,8 +102,9 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import axios from "axios";
 
 const name = ref("");
 const desc = ref("");
@@ -120,6 +113,9 @@ const menuOpen = ref(false);
 const sideBarActive = ref(false);
 const loading = ref(false);
 const progress = ref(0);
+const user = ref(null);
+const file = ref(null);
+const fileInput = ref(null);
 let progressInterval = null;
 
 const tags = ref([
@@ -134,18 +130,43 @@ const tags = ref([
   { label: "Verständig", selected: false },
 ]);
 
+const router = useRouter();
+
+function openMenu() {
+  menuOpen.value = !menuOpen.value;
+}
+
 function selectTone(index) {
   tags.value.forEach((tag, i) => {
     tag.selected = i === index;
   });
 }
 
-const router = useRouter();
-function openMenu() {
-  menuOpen.value = !menuOpen.value;
+async function logout() {
+  try {
+    await axios.post("/api/logout", {}, { withCredentials: true });
+    router.push("/login");
+  } catch (err) {
+    console.error("Logout failed:", err);
+  }
 }
-function logout() {
-  router.push("/login");
+
+function triggerFileInput() {
+  fileInput.value?.click();
+}
+
+function handleFileChange(e) {
+  file.value = e.target.files[0];
+}
+
+function toggleSidebar() {
+  sideBarActive.value = !sideBarActive.value;
+  const sidebar = document.getElementById("sidebar");
+  if (sideBarActive.value) {
+    sidebar.classList.add("active");
+  } else {
+    sidebar.classList.remove("active");
+  }
 }
 
 async function generate() {
@@ -186,7 +207,6 @@ async function generate() {
       a.download = `${name.value.replace(/\s+/g, "_")}_bot_package.zip`;
       a.click();
       window.URL.revokeObjectURL(url);
-
       progress.value = 100;
     } else {
       const errorText = await res.text();
@@ -201,26 +221,17 @@ async function generate() {
   }
 }
 
-
-const file = ref(null);
-const fileInput = ref(null);
-
-function triggerFileInput() {
-  fileInput.value?.click();
-}
-
-function handleFileChange(e) {
-  file.value = e.target.files[0];
-  console.log("📁 Selected file:", file.value?.name);
-}
-
-function toggleSidebar() {
-  sideBarActive.value = !sideBarActive.value;
-  const sidebar = document.getElementById("sidebar");
-  if (sideBarActive.value) {
-    sidebar.classList.add("active");
-  } else {
-    sidebar.classList.remove("active");
+onMounted(async () => {
+  try {
+    const session = await axios.get("/api/me", { withCredentials: true });
+    if (!session.data.user) {
+      router.push("/login");
+      return;
+    }
+    user.value = session.data.user;
+  } catch (error) {
+    console.error("Fehler beim Laden der Seite:", error);
+    router.push("/login");
   }
-}
+});
 </script>

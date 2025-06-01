@@ -47,8 +47,9 @@
   
           <!-- Error message (always shown for now) -->
           <p v-if="error" class="error-msg">
-            Registrierung fehlgeschlagen. Bitte überprüfe deine Eingaben.
+            {{ error }}
           </p>
+
   
           <!-- Submit button -->
           <button type="submit" class="cta-button">Registrieren</button>
@@ -76,9 +77,35 @@
   const router = useRouter()
   
   // For now, always show error when submitting registration
-  function handleRegister() {
-    error.value = true
+import axios from 'axios'
+
+async function handleRegister() {
+  error.value = false
+
+  if (password.value !== confirmPassword.value) {
+    error.value = 'Passwörter stimmen nicht überein.'
+    return
   }
+
+  try {
+    const response = await axios.post('/api/register', {
+      name: name.value,
+      email: email.value,
+      password: password.value
+    })
+
+    if (response.data.message) {
+      router.push('/login') // Redirect on success
+    }
+  } catch (err) {
+    if (err.response && err.response.data && err.response.data.error) {
+      error.value = err.response.data.error
+    } else {
+      error.value = 'Ein unbekannter Fehler ist aufgetreten.'
+    }
+  }
+}
+
   
   // Navigate to the login page
   function goToLogin() {

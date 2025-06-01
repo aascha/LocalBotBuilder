@@ -17,8 +17,9 @@
         <input id="password" type="password" placeholder="**********" v-model="password" />
 
         <p v-if="error" class="error-msg">
-          E-Mail oder Passwort wurden inkorrekt eingegeben.
+          {{ error }}
         </p>
+
 
         <button type="submit" class="cta-button">Anmelden</button>
       </form>
@@ -38,11 +39,29 @@ const router = useRouter()
 
 const email = ref('')
 const password = ref('')
-const error = ref(false)
+const error = ref('')
 
-function handleLogin() {
-  error.value = true // For demonstration, always show error
+import axios from 'axios'
+
+async function handleLogin() {
+  error.value = false
+
+  try {
+    const response = await axios.post('/api/login', {
+      email: email.value,
+      password: password.value
+    }, {
+      withCredentials: true  // Important for session cookies
+    })
+
+    if (response.data.message) {
+      router.push('/create') // Redirect after login
+    }
+  } catch (err) {
+    error.value = true
+  }
 }
+
 
 function goToRegister() {
   router.push('/register')

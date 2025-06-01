@@ -8,7 +8,8 @@ db = SQLAlchemy()
 def create_app():
     # Initialize Flask app
     app = Flask(__name__)
-    CORS(app)
+    app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
+    CORS(app, supports_credentials=True)
 
     # Define directories
     ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))

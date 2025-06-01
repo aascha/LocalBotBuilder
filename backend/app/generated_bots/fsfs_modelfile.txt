@@ -1,0 +1,4 @@
+FROM grok
+SYSTEM "Use a formal, concise, and professional tone. Keep responses clear and business-like."
+PARAMETER temperature 0.7
+PARAMETER num_ctx 2048

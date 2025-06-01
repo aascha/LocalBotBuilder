@@ -55,26 +55,41 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
 
 const bots = ref([])
 const menuOpen = ref(false)
+const router = useRouter()
 
 function openMenu() {
   menuOpen.value = !menuOpen.value
 }
 
-function logout() {
-  // your logout logic
-  console.log('Logging out...')
+async function logout() {
+  try {
+    await axios.post('/api/logout', {}, { withCredentials: true })
+    router.push('/login')
+  } catch (err) {
+    console.error('Logout failed:', err)
+  }
 }
 
 onMounted(async () => {
   try {
-    const response = await axios.get('/api/history')
+    // ✅ Block access if not logged in
+    const session = await axios.get('/api/me', { withCredentials: true })
+    if (!session.data.user) {
+      router.push('/login')
+      return
+    }
+
+    // ✅ Load only current user's bots
+    const response = await axios.get('/api/history', { withCredentials: true })
     bots.value = response.data
   } catch (error) {
     console.error('Failed to fetch bots:', error)
+    router.push('/login')
   }
 })
 </script>
