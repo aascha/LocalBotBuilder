@@ -166,7 +166,6 @@ async function generate() {
   loading.value = true;
   progress.value = 0;
 
-  // ⏳ Simulate progress increasing every 200ms
   progressInterval = setInterval(() => {
     if (progress.value < 90) {
       progress.value += 5;
@@ -179,13 +178,23 @@ async function generate() {
       body: formData,
     });
 
-    const text = await res.text();
-    progress.value = 100;
-    alert(text);
-    router.push("/chat");
+    if (res.ok) {
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${name.value.replace(/\s+/g, "_")}_bot_package.zip`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+
+      progress.value = 100;
+    } else {
+      const errorText = await res.text();
+      alert("❌ Fehler: " + errorText);
+    }
   } catch (err) {
-    console.error("❌ Error creating bot:", err);
-    alert("❌ Fehler beim Erstellen des Bots.");
+    console.error("❌ Fehler beim Erstellen des Bots:", err);
+    alert("❌ Unerwarteter Fehler beim Erstellen des Bots.");
   } finally {
     clearInterval(progressInterval);
     loading.value = false;

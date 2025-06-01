@@ -6,29 +6,39 @@ from flask_cors import CORS
 db = SQLAlchemy()
 
 def create_app():
+    # Initialize Flask app
     app = Flask(__name__)
     CORS(app)
 
+    # Define directories
     ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     APP_DIR = os.path.join(ROOT_DIR, "app")
+    DATA_DIR = os.path.join(APP_DIR, "data")
+    GENERATED_DIR = os.path.join(APP_DIR, "generated_bots")
+    UPLOAD_DIR = os.path.join(APP_DIR, "uploaded_files")
+    INDEX_DIR = os.path.join(APP_DIR, "index_storage")
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(APP_DIR, 'data', 'history.db')}"
-    app.config['BASE_DIR'] = ROOT_DIR
-    app.config['GENERATED_FOLDER'] = os.path.join(APP_DIR, 'generated_bots')
-    app.config['UPLOAD_FOLDER'] = os.path.join(APP_DIR, 'uploaded_files')
-    app.config['INDEX_FOLDER'] = os.path.join(APP_DIR, 'index_storage')
+    # App config
+    app.config.update({
+        'SQLALCHEMY_DATABASE_URI': f"sqlite:///{os.path.join(DATA_DIR, 'history.db')}",
+        'BASE_DIR': ROOT_DIR,
+        'GENERATED_FOLDER': GENERATED_DIR,
+        'UPLOAD_FOLDER': UPLOAD_DIR,
+        'INDEX_FOLDER': INDEX_DIR,
+    })
 
+    # Ensure all necessary folders exist
+    for folder in [DATA_DIR, GENERATED_DIR, UPLOAD_DIR, INDEX_DIR]:
+        os.makedirs(folder, exist_ok=True)
 
-    os.makedirs(app.config['GENERATED_FOLDER'], exist_ok=True)
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    os.makedirs(app.config['INDEX_FOLDER'], exist_ok=True)
-    os.makedirs(os.path.join(APP_DIR, 'data'), exist_ok=True)
-
+    # Initialize extensions
     db.init_app(app)
 
+    # Register blueprints
     from .routes import bp as main_bp
     app.register_blueprint(main_bp)
 
+    # Create database tables
     with app.app_context():
         db.create_all()
 

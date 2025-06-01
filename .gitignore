@@ -1,40 +1,24 @@
-# ─────────────────────────────
-# Python
+# ───── Python cache & compiled files ─────
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# ───── Databases & logs ─────
+*.db
+*.sqlite3
+*.log
 *.db-journal
 
-# Virtual Environment
-venv/
-
-# ─────────────────────────────
-# Node / Vue
-node_modules/
-dist/
-frontend/.vite/
-
-# ─────────────────────────────
-# Databases
-*.db
-
-# ─────────────────────────────
-# System / Editor files
-.DS_Store
+# ───── Environment variables ─────
 .env
+
+# ───── Node/Vue ─────
+node_modules/
+
+# ───── IDE/editor settings ─────
 .vscode/
 
-# ─────────────────────────────
-# Old top-level folders (safety)
-data/
-generated_bots/
-index_storage/
-uploaded_files/
-
-# ─────────────────────────────
-# App-level generated content
-app/__pycache__/
-app/uploaded_files/temp_*/
-app/index_storage/*
-app/generated_bots/*
+# ───── Build artifacts (optional) ─────
+dist/
+frontend/.vite/
