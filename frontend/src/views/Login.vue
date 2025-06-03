@@ -16,10 +16,7 @@
         <label for="password">Passwort</label>
         <input id="password" type="password" placeholder="**********" v-model="password" />
 
-        <p v-if="error" class="error-msg">
-          {{ error }}
-        </p>
-
+        <p v-if="error" class="error-msg">{{ error }}</p>
 
         <button type="submit" class="cta-button">Anmelden</button>
       </form>
@@ -32,41 +29,46 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
 
 const router = useRouter()
-
 const email = ref('')
 const password = ref('')
 const error = ref('')
 
-import axios from 'axios'
+onMounted(async () => {
+  try {
+    const res = await axios.get('/api/me', { withCredentials: true })
+    if (res.data.user) {
+      router.push('/create')
+    }
+  } catch (err) {
+    console.error('Fehler beim Session-Check:', err)
+  }
+})
 
 async function handleLogin() {
-  error.value = false
+  error.value = ''
 
   try {
     const response = await axios.post('/api/login', {
       email: email.value,
       password: password.value
     }, {
-      withCredentials: true  // Important for session cookies
+      withCredentials: true
     })
 
     if (response.data.message) {
-      router.push('/create') // Redirect after login
+      router.push('/create')
     }
   } catch (err) {
-    error.value = true
+    error.value = 'Login fehlgeschlagen. Bitte überprüfe deine Daten.'
   }
 }
-
 
 function goToRegister() {
   router.push('/register')
 }
 </script>
-
-
-  
