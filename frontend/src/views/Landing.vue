@@ -4,7 +4,7 @@
     <header class="nav-bar">
       <div></div> <!-- spacer -->
       <div class="nav-buttons" v-if="user">
-        <span>👤 {{ user.name }}</span>
+        <span>{{ user.name }}</span>
         <button class="nav-btn dark" @click="logout">Logout</button>
       </div>
       <div class="nav-buttons" v-else>
@@ -72,8 +72,17 @@ function goToRegister() {
   router.push("/register");
 }
 
-function goToQuestionnaire() {
-  router.push("/questionnaire1");
+async function goToQuestionnaire() {
+  try {
+    const res = await axios.get("/api/me", { withCredentials: true });
+    if (res.data.user) {
+      router.push("/create"); 
+    } else {
+      router.push("/questionnaire1"); 
+    }
+  } catch (err) {
+    router.push("/questionnaire1");
+  }
 }
 
 async function logout() {

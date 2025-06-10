@@ -2,7 +2,9 @@
   <div class="login-page">
     <!-- Top navigation bar -->
     <header class="nav-bar">
-      <img src="../assets/logo_full.svg" alt="Logo" class="top-logo" />
+      <router-link to="/" class="logo-link">
+        <img src="../assets/logo_full.svg" alt="Logo" class="top-logo" />
+      </router-link>
       <button class="nav-btn dark" @click="goToRegister">Registrieren</button>
     </header>
 

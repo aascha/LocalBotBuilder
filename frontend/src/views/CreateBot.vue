@@ -1,20 +1,20 @@
 <template>
   <div class="create-page-builder">
-    <!-- Header -->
     <header class="nav-bar">
       <router-link to="/" class="logo-link">
         <img src="../assets/logo_full.svg" alt="Logo" class="top-logo" />
       </router-link>
-
       <div class="user-menu">
-        <div class="user-name" @click="openMenu">
-          {{ user?.name || 'Lade...' }}
+        <div class="avatar-icon" @click="openMenu">
+          <img src="../assets/avatar.svg" alt="Avatar" class="user-icon" />
         </div>
-        <ul v-if="menuOpen" class="menu-dropdown" @click.stop>
+        <ul v-if="menuOpen" class="menu-dropdown">
+          <li class="menu-user">{{ user?.name || 'Lade...' }}</li>
           <li @click="logout">Logout</li>
         </ul>
       </div>
     </header>
+
 
     <!-- Sidebar -->
     <div class="side-main-wrapper">
