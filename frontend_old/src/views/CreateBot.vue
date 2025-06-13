@@ -1,0 +1,237 @@
+<template>
+  <div class="create-page-builder">
+    <header class="nav-bar">
+      <router-link to="/" class="logo-link">
+        <img src="../assets/logo_full.svg" alt="Logo" class="top-logo" />
+      </router-link>
+      <div class="user-menu">
+        <div class="avatar-icon" @click="openMenu">
+          <img src="../assets/avatar.svg" alt="Avatar" class="user-icon" />
+        </div>
+        <ul v-if="menuOpen" class="menu-dropdown">
+          <li class="menu-user">{{ user?.name || 'Lade...' }}</li>
+          <li @click="logout">Logout</li>
+        </ul>
+      </div>
+    </header>
+
+
+    <!-- Sidebar -->
+    <div class="side-main-wrapper">
+      <aside id="sidebar" class="sidebar">
+        <div>
+          <font-awesome-icon
+            icon="list"
+            class="list-icon"
+            @click.stop="toggleSidebar"
+          />
+        </div>
+        <router-link to="/create" class="nav-button">Bot erstellen</router-link>
+        <router-link to="/botoverview" class="nav-button">Meine Bots</router-link>
+      </aside>
+
+      <!-- Main Bot Creation Section -->
+      <main class="create-container">
+        <h2 class="create-title">
+          Erstelle deinen<br />personalisierten Chatbot
+        </h2>
+
+        <input
+          v-model="name"
+          type="text"
+          class="name-input"
+          placeholder="Gib mir einen Namen!"
+        />
+
+        <div class="tag-row">
+          <button
+            v-for="(t, i) in tags"
+            :key="i"
+            :class="{ selected: t.selected }"
+            class="tag-btn"
+            @click="selectTone(i)"
+          >
+            {{ t.label }}
+          </button>
+        </div>
+
+        <div class="desc-box">
+          <div class="upload-btn" @click="triggerFileInput">
+            <img src="../assets/upload.svg" alt="upload" class="upload-icon" />
+            <input
+              type="file"
+              ref="fileInput"
+              @change="handleFileChange"
+              style="display: none"
+            />
+          </div>
+          <textarea
+            v-model="desc"
+            class="desc-input"
+            placeholder="Beschreibe deinen Bot…"
+          ></textarea>
+
+          <div class="desc-footer">
+            <span>Erfahrungslevel</span>
+            <select v-model="model">
+              <option value="gpt-4o">GPT-4o</option>
+              <option value="claude">Claude-Sonnet-3.7</option>
+              <option value="gemini">Gemini-Pro</option>
+              <option value="grok">Grok</option>
+              <option value="deepseek">DeepSeek V3</option>
+              <option value="llama">Meta Llama 3.3</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="generate-btn" @click="generate" :disabled="loading">
+          Generieren
+        </button>
+
+        <div v-if="loading" class="progress-container">
+          <div class="progress-bar" :style="{ width: progress + '%' }"></div>
+          <p>Datei wird verarbeitet... {{ progress }}%</p>
+        </div>
+
+        <div v-if="loading" class="loading-indicator">
+          Bot wird erstellt und Datei wird verarbeitet...
+        </div>
+      </main>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
+
+const name = ref("");
+const desc = ref("");
+const model = ref("gpt-4o");
+const menuOpen = ref(false);
+const sideBarActive = ref(false);
+const loading = ref(false);
+const progress = ref(0);
+const user = ref(null);
+const file = ref(null);
+const fileInput = ref(null);
+let progressInterval = null;
+
+const tags = ref([
+  { label: "Einfache Antworten", selected: true },
+  { label: "Lustig", selected: false },
+  { label: "Motivierend", selected: false },
+  { label: "Detailliert", selected: false },
+  { label: "Versichernd", selected: false },
+  { label: "Freundlich", selected: false },
+  { label: "Professionell", selected: false },
+  { label: "Nachvollziehbar", selected: false },
+  { label: "Verständig", selected: false },
+]);
+
+const router = useRouter();
+
+function openMenu() {
+  menuOpen.value = !menuOpen.value;
+}
+
+function selectTone(index) {
+  tags.value.forEach((tag, i) => {
+    tag.selected = i === index;
+  });
+}
+
+async function logout() {
+  try {
+    await axios.post("/api/logout", {}, { withCredentials: true });
+    router.push("/login");
+  } catch (err) {
+    console.error("Logout failed:", err);
+  }
+}
+
+function triggerFileInput() {
+  fileInput.value?.click();
+}
+
+function handleFileChange(e) {
+  file.value = e.target.files[0];
+}
+
+function toggleSidebar() {
+  sideBarActive.value = !sideBarActive.value;
+  const sidebar = document.getElementById("sidebar");
+  if (sideBarActive.value) {
+    sidebar.classList.add("active");
+  } else {
+    sidebar.classList.remove("active");
+  }
+}
+
+async function generate() {
+  const selectedTone = tags.value.find(t => t.selected)?.label || "Professionell";
+
+  const formData = new FormData();
+  formData.append("bot_name", name.value);
+  formData.append("model_name", model.value);
+  formData.append("system_prompt", desc.value);
+  formData.append("temperature", "0.7");
+  formData.append("context_window", "2048");
+  formData.append("tone", selectedTone);
+
+  if (file.value) {
+    formData.append("file", file.value);
+  }
+
+  loading.value = true;
+  progress.value = 0;
+
+  progressInterval = setInterval(() => {
+    if (progress.value < 90) {
+      progress.value += 5;
+    }
+  }, 200);
+
+  try {
+    const res = await fetch("/api/create", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (res.ok) {
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${name.value.replace(/\s+/g, "_")}_bot_package.zip`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      progress.value = 100;
+    } else {
+      const errorText = await res.text();
+      alert("❌ Fehler: " + errorText);
+    }
+  } catch (err) {
+    console.error("❌ Fehler beim Erstellen des Bots:", err);
+    alert("❌ Unerwarteter Fehler beim Erstellen des Bots.");
+  } finally {
+    clearInterval(progressInterval);
+    loading.value = false;
+  }
+}
+
+onMounted(async () => {
+  try {
+    const session = await axios.get("/api/me", { withCredentials: true });
+    if (!session.data.user) {
+      router.push("/login");
+      return;
+    }
+    user.value = session.data.user;
+  } catch (error) {
+    console.error("Fehler beim Laden der Seite:", error);
+    router.push("/login");
+  }
+});
+</script>

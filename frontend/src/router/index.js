@@ -30,10 +30,24 @@ const routes = [
   { path: "/questionnaire5", component: Questionnaire5 },
   { path: "/questionnaire4_expert", component: Questionnaire4_expert },
   { path: "/botoverview", component: BotOverview },
-
+  
 ];
 
-export default createRouter({
+const router = createRouter({
   history: createWebHistory(),
   routes,
 });
+
+router.beforeEach((to, from, next) => {
+  const isLoggedIn = !!localStorage.getItem('user');
+  const hasCompletedQuestionnaire = localStorage.getItem('questionnaireDone') === 'true';
+
+  if (to.path === '/create' && !hasCompletedQuestionnaire) {
+    next('/questionnaire1'); // or another questionnaire step
+  } else {
+    next();
+  }
+});
+
+export default router;
+

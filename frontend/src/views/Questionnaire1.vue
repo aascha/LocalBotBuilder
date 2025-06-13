@@ -1,66 +1,105 @@
 <template>
-  <div class="questionnaire"></div>
-  <header class="header">
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no"
-    />
-    <div @click="goToLanding" class="logo">
-      <img src="../assets/logo_full.svg" alt="Logo" class="top-logo" />
-    </div>
+  <div class="wrapper">
+    <div class="questionnaire"></div>
+    <header class="nav-bar">
+      <div @click="goToLanding" class="logo">
+        <img src="../assets/logo_full.svg" alt="Logo" class="top-logo" />
+      </div>
 
-    <font-awesome-icon icon="circle-user" class="user-icon" @click="Logout" />
-  </header>
-  <div class="side-main-wrapper">
-    <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar">
-      <div>
-        <font-awesome-icon
-          icon="list"
-          class="list-icon"
-          @click.stop="toggleSidebar"
-        />
+      <div class="avatar-icon" @click="openMenu">
+        <font-awesome-icon :icon="['fas', 'circle-user']" class="user-icon" />
+        <ul v-if="menuOpen" class="menu-dropdown">
+          <li @click="logout">Logout</li>
+        </ul>
       </div>
-      <router-link to="/create" class="nav-button">Bot erstellen</router-link>
-      <router-link to="/botoverview" class="nav-button">Meine Bots</router-link>
-    </aside>
-    <!-- Main Content -->
-    <main class="main-content">
-      <div class="quiz-wrapper">
-        <div class="question">
-          <h3>
-            1. Wie würdest du deine Erfahrung mit KI/LLM Tools beschreiben?
-          </h3>
+    </header>
+    <div class="side-main-wrapper">
+      <!-- Sidebar -->
+      <aside id="sidebar" class="sidebar">
+        <div>
+          <img
+            src="../assets/sidebar-icon.svg"
+            class="sidebar-icon"
+            alt="Menu"
+            @click.stop="toggleSidebar"
+          />
         </div>
-        <div class="answers-wrapper">
-          <label class="answer-option">
-            <input type="radio" id="option1" name="experience" value="1" />
-            <span
-              ><b>Amateur</b> <br />Ich habe noch nie mit KI/LLM Tools
-              gearbeitet.</span
-            >
-          </label>
-          <label class="answer-option">
-            <input type="radio" id="option2" name="experience" value="2" />
-            <span
-              ><b>Experte</b> <br />Ich habe ein wenig Erfahrung mit KI/LLM
-              Tools.</span
-            >
-          </label>
+        <button class="nav-button" @click="goToBuilder">Bot erstellen</button>
+        <button class="nav-button">Meine Bots</button>
+      </aside>
+      <!-- Main Content -->
+      <main class="main-content">
+        <div class="quiz-wrapper">
+          <div class="question">
+            <h3>
+              1. Wie würdest du deine Erfahrung mit KI/LLM Tools beschreiben?
+            </h3>
+          </div>
+          <div class="answers-wrapper">
+            <label class="answer-option">
+              <input
+                type="radio"
+                id="option1"
+                name="experience"
+                value="1"
+                v-model="selectedOption"
+                @change="updateSelectedOption(options[0])"
+              />
+              <span
+                ><b>Amateur</b> <br />
+                <span class="option-description"
+                  >Ich habe noch nie mit KI/LLM Tools gearbeitet.</span
+                ></span
+              >
+            </label>
+            <label class="answer-option">
+              <input
+                type="radio"
+                id="option2"
+                name="experience"
+                value="2"
+                v-model="selectedOption"
+                @change="updateSelectedOption(options[1])"
+              />
+              <span
+                ><b>Experte</b> <br />
+                <span class="option-description"
+                  >Ich habe ein wenig Erfahrung mit KI/LLM Tools.</span
+                ></span
+              >
+            </label>
+          </div>
+          <!-- Continue Button -->
+          <div class="quiz-button-container">
+            <button class="continue-button" @click="goToNextQuestion">
+              Fortfahren
+            </button>
+          </div>
         </div>
-        <!-- Continue Button -->
-        <div class="quiz-button-container">
-          <button class="continue-button" @click="goToNextQuestion">
-            Fortfahren
-          </button>
-        </div>
-      </div>
-    </main>
+      </main>
+    </div>
   </div>
 </template>
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { useQuestionnaireStore } from "../store";
+
+const options = [
+  { id: "option1", value: "Amateur" },
+  { id: "option2", value: "Experte" },
+];
+
+const selectedOptionValue = ref(null);
+const selectedOptionId = ref(null);
+const store = useQuestionnaireStore();
+const menuOpen = ref(false);
+
+const updateSelectedOption = (option) => {
+  selectedOptionValue.value = option.value;
+  selectedOptionId.value = option.id;
+  store.setFirstAnswer(option);
+};
 
 const router = useRouter();
 const sideBarActive = ref(false);
@@ -70,15 +109,20 @@ function goToLanding() {
 }
 
 function goToBuilder() {
-  router.push("/builder");
+  router.push("/create");
 }
 
-function Logout() {
+function openMenu() {
+  menuOpen.value = !menuOpen.value;
+}
+function logout() {
   router.push("/login");
 }
 
 function goToNextQuestion() {
-  router.push("/questionnaire2");
+  if (selectedOptionValue.value != null) {
+    router.push("/questionnaire2");
+  } else alert("Bitte wähle eine Option aus.");
 }
 
 function toggleSidebar() {

@@ -7,36 +7,53 @@
       </router-link>
 
       <div class="user-menu">
-        <div class="avatar-icon name-icon" @click="openMenu">
+        <div class="user-name" @click="openMenu">
           {{ user?.name || 'Lade...' }}
         </div>
-        <ul v-if="menuOpen" class="menu-dropdown" @click.stop>
-          <li class="menu-user">{{ user?.name || 'Lade...' }}</li>
+        <ul v-if="menuOpen" class="menu-dropdown">
           <li @click="logout">Logout</li>
         </ul>
       </div>
+
     </header>
 
-    <!-- Bot Overview Box -->
-    <div class="bot-overview-box">
-      <h2>Meine Bots</h2>
-      <div class="grid-container">
-        <div
-          v-for="(bot, index) in bots"
-          :key="index"
-          class="bot-card"
-        >
-          <div class="bot-image">
-            <img :src="bot.image || '/default-bot.png'" alt="Bot Image" />
-          </div>
-          <div class="bot-info">
-            <h3>{{ bot.bot_name }}</h3>
-            <p>{{ bot.system_prompt }}</p>
-            <button @click="downloadBot(bot.bot_name)">Herunterladen</button>
-          </div>
+
+<!-- Sidebar + Main content wrapper -->
+<div class="side-main-wrapper">
+  <aside id="sidebar" class="sidebar">
+    <div>
+      <img
+        src="../assets/sidebar-icon.svg"
+        class="sidebar-icon"
+        alt="Menu"
+        @click.stop="toggleSidebar"
+      />
+    </div>
+    <router-link to="/create" class="nav-button">Bot erstellen</router-link>
+    <router-link to="/botoverview" class="nav-button">Meine Bots</router-link>
+  </aside>
+
+  <!-- Main bot list section -->
+  <div class="bot-overview-box">
+    <h2>Meine Bots</h2>
+    <div class="grid-container">
+      <div
+        v-for="(bot, index) in bots"
+        :key="index"
+        class="bot-card"
+      >
+        <div class="bot-image">
+          <img :src="bot.image || '/default-bot.jpg'" alt="Bot Image" />
+        </div>
+        <div class="bot-info">
+          <h3>{{ bot.bot_name }}</h3>
+          <p>{{ bot.system_prompt }}</p>
+          <button @click="downloadBot(bot.bot_name)">Herunterladen</button>
         </div>
       </div>
     </div>
+  </div>
+</div>
 
     <!-- Bottom Bar -->
     <div class="bottom-bar">
@@ -116,6 +133,19 @@ onMounted(async () => {
     router.push('/login')
   }
 })
+
+
+const sideBarActive = ref(false);
+function toggleSidebar() {
+  sideBarActive.value = !sideBarActive.value;
+  const sidebar = document.getElementById("sidebar");
+  if (sideBarActive.value) {
+    sidebar.classList.add("active");
+  } else {
+    sidebar.classList.remove("active");
+  }
+}
+
 </script>
 
 <style scoped>

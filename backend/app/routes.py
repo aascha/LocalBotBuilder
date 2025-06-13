@@ -108,7 +108,7 @@ def create_bot():
         uploaded_filename = None
         index_dir = None
 
-        # Index file (Should this be in the builder)
+        # Index file (Should this be in the builder)  REMOVE THIS
         if file and file.filename:
             temp_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], f"temp_{bot_name.replace(' ', '_')}")
             os.makedirs(temp_dir, exist_ok=True)
@@ -161,7 +161,7 @@ def create_bot():
         return "Failed to create bot", 500
 
 # ──────────────── Other Routes ────────────────
-@bp.route('/api/build', methods=['POST'])   #  Should this be in the builder
+@bp.route('/api/build', methods=['POST'])   #  Should this be in the builder  REMOVE THIS
 def build_model():
     try:
         filename = request.form['filename']

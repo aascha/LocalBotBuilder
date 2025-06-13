@@ -2,16 +2,23 @@
   <div class="wrapper">
     <!-- Top navigation bar -->
     <header class="nav-bar">
-      <div></div> <!-- spacer -->
-      <div class="nav-buttons" v-if="user">
-        <span>{{ user.name }}</span>
-        <button class="nav-btn dark" @click="logout">Logout</button>
+      <router-link to="/" class="logo-link">
+        <img src="../assets/logo_full.svg" alt="Logo" class="top-logo" />
+      </router-link>
+      <div class="user-menu" v-if="user">
+        <div class="user-name" @click="openMenu">
+          {{ user.name }}
+        </div>
+        <ul v-if="menuOpen" class="menu-dropdown">
+          <li @click="logout">Logout</li>
+        </ul>
       </div>
       <div class="nav-buttons" v-else>
         <button class="nav-btn light" @click="goToLogin">Anmelden</button>
         <button class="nav-btn dark" @click="goToRegister">Registrieren</button>
       </div>
     </header>
+
 
     <!-- Main content -->
     <main class="container">
@@ -34,7 +41,7 @@
       </p>
 
       <!-- Call to Action -->
-      <button class="cta-button" @click="goToQuestionnaire">
+      <button class="cta-button" @click="goToRegister">
         Erstelle deinen Chatbot
       </button>
     </main>
@@ -54,6 +61,12 @@ import logo from "../logo.jpg";
 
 const router = useRouter();
 const user = ref(null);
+const menuOpen = ref(false); // <--- Add this
+
+function openMenu() {         // <--- And this
+  menuOpen.value = !menuOpen.value;
+}
+
 
 onMounted(async () => {
   try {

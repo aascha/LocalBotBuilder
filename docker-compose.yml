@@ -24,7 +24,7 @@ services:
       - ./frontend:/app            # Sync source code
       - /app/node_modules          # Avoid conflicts with host's node_modules
     working_dir: /app
-    command: npm run dev           # Cleaned syntax
+    command: npm run dev -- --host          # Cleaned syntax
 
   ollama:
     image: ollama/ollama

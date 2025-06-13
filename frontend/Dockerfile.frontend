@@ -1,17 +1,15 @@
-# Use official Node.js base image
-FROM node:18-bullseye
+# Dockerfile.frontend
 
-# Set working directory inside the container
+FROM node:18
+
 WORKDIR /app
 
-# Copy only package.json and lock file first for better caching
-COPY package*.json ./
+# This layer must contain BOTH package.json and package-lock.json
+COPY package.json package-lock.json ./
 
-# Install dependencies (use --legacy-peer-deps if needed)
-RUN npm install --legacy-peer-deps
+RUN npm install
 
-# Copy all remaining frontend files
+# Then copy the rest
 COPY . .
 
-# Start the Vite dev server
 CMD ["npm", "run", "dev"]

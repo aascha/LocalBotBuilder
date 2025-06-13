@@ -1,24 +1,30 @@
 <template>
   <div class="questionnaire"></div>
-  <header class="header">
+  <header class="nav-bar">
     <div @click="goToLanding" class="logo">
       <img src="../assets/logo_full.svg" alt="Logo" class="top-logo" />
     </div>
 
-    <font-awesome-icon icon="circle-user" class="user-icon" @click="Logout" />
+    <div class="avatar-icon" @click="openMenu">
+      <font-awesome-icon :icon="['fas', 'circle-user']" class="user-icon" />
+      <ul v-if="menuOpen" class="menu-dropdown">
+        <li @click="logout">Logout</li>
+      </ul>
+    </div>
   </header>
   <div class="side-main-wrapper">
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar">
       <div>
-        <font-awesome-icon
-          icon="list"
-          class="list-icon"
+        <img
+          src="../assets/sidebar-icon.svg"
+          class="sidebar-icon"
+          alt="Menu"
           @click.stop="toggleSidebar"
         />
       </div>
-      <router-link to="/create" class="nav-button">Bot erstellen</router-link>
-      <router-link to="/botoverview" class="nav-button">Meine Bots</router-link>
+      <button class="nav-button" @click="goToBuilder">Bot erstellen</button>
+      <button class="nav-button">Meine Bots</button>
     </aside>
     <!-- Main Content -->
     <main class="main-content">
@@ -28,23 +34,64 @@
         </div>
         <div class="answers-wrapper">
           <label class="answer-option">
-            <input type="radio" id="option1" name="system-specs" value="1" />
-            <span><b>Einsteiger</b> <br />Dual-core CPU, 4-8GB RAM</span>
-          </label>
-          <label class="answer-option">
-            <input type="radio" id="option2" name="system-specs" value="2" />
-            <span><b>Mittel</b> <br />Quad-core CPU, 8-16GB RAM</span>
-          </label>
-          <label class="answer-option">
-            <input type="radio" id="option3" name="system-specs" value="3" />
+            <input
+              type="radio"
+              id="option1"
+              name="system-specs"
+              value="1"
+              v-model="selectedOption"
+              @change="updateSelectedOption(options[0])"
+            />
             <span
-              ><b>Hohe Performanz</b> <br />6+ Core CPU, 16-32GB RAM, GPU</span
+              ><b>Einsteiger</b> <br /><span class="option-description"
+                >Dual-core CPU, 4-8GB RAM</span
+              ></span
             >
           </label>
           <label class="answer-option">
-            <input type="radio" id="option4" name="system-specs" value="4" />
+            <input
+              type="radio"
+              id="option2"
+              name="system-specs"
+              value="2"
+              v-model="selectedOption"
+              @change="updateSelectedOption(options[1])"
+            />
             <span
-              ><b>Nicht sicher</b> <br />Standard-Modell wird verwendet</span
+              ><b>Mittel</b> <br /><span class="option-description"
+                >Quad-core CPU, 8-16GB RAM</span
+              ></span
+            >
+          </label>
+          <label class="answer-option">
+            <input
+              type="radio"
+              id="option3"
+              name="system-specs"
+              value="3"
+              v-model="selectedOption"
+              @change="updateSelectedOption(options[2])"
+            />
+            <span
+              ><b>Hohe Performanz</b> <br />
+              <span class="option-description"
+                >6+ Core CPU, 16-32GB RAM, GPU</span
+              ></span
+            >
+          </label>
+          <label class="answer-option">
+            <input
+              type="radio"
+              id="option4"
+              name="system-specs"
+              value="4"
+              v-model="selectedOption"
+              @change="updateSelectedOption(options[3])"
+            />
+            <span
+              ><b>Nicht sicher</b> <br /><span class="option-description"
+                >Standard-Modell wird verwendet</span
+              ></span
             >
           </label>
           <div class="quiz-button-container">
@@ -61,9 +108,28 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { useQuestionnaireStore } from "../store";
 
 const router = useRouter();
 const sideBarActive = ref(false);
+const store = useQuestionnaireStore();
+const selectedOptionValue = ref(null);
+const selectedOptionId = ref(null);
+const setDefaultModel = ref(true);
+const menuOpen = ref(false);
+
+const options = [
+  { id: "option1", value: "Einsteiger" },
+  { id: "option2", value: "Mittel" },
+  { id: "option3", value: "Hohe Performanz" },
+  { id: "option4", value: "Nicht sicher" },
+];
+
+const updateSelectedOption = (option) => {
+  selectedOptionValue.value = option.value;
+  selectedOptionId.value = option.id;
+  store.setThirdAnswer(option);
+};
 
 function goToLanding() {
   router.push("/");
@@ -72,13 +138,24 @@ function goToLanding() {
 function goToBuilder() {
   router.push("/builder");
 }
-
-function Logout() {
+function openMenu() {
+  menuOpen.value = !menuOpen.value;
+}
+function logout() {
   router.push("/login");
 }
 
 function goToNextQuestion() {
-  router.push("/questionnaire4");
+  if (selectedOptionValue.value != null) {
+    if (store.firstAnswer.value === "Experte") {
+      // Check the value of the first answer and navigate accordingly
+      router.push("/questionnaire4_expert");
+    } else {
+      router.push("/questionnaire4");
+    }
+  } else {
+    alert("Bitte wähle eine Option aus.");
+  }
 }
 
 function goBack() {

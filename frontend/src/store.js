@@ -24,5 +24,23 @@ export const useQuestionnaireStore = defineStore("questionnaire", {
     setFifthAnswer(answer) {
       this.fifthAnswer = answer;
     },
+    reset() {
+      this.firstAnswer = null;
+      this.secondAnswer = null;
+      this.thirdAnswer = null;
+      this.fourthAnswer = null;
+      this.fifthAnswer = null;
+    },
+  },
+});
+
+export const useModelStore = defineStore("model", {
+  state: () => ({
+    model: "qwen2.5:3b",
+  }),
+  actions: {
+    setModel(model) {
+      this.model = model;
+    },
   },
 });

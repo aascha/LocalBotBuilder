@@ -21,7 +21,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.3rem 2rem;
+  padding: 1rem 2rem;
   background-color: white;
   border-bottom: 1px solid #e0e0e0;
 }
@@ -31,10 +31,24 @@ body {
   justify-content: space-between;
   padding: 0.5rem 1rem;
 }
-.nav-buttons {
-  display: flex;
-  gap: 10px;
+.nav-button {
+  text-decoration: none; /* 👈 removes underline */
+  color: #0076a2;
+  font-weight: 500;
 }
+
+.nav-button:visited {
+  color: #0076a2;
+  text-decoration: none;
+}
+
+.router-link-active.nav-button {
+  background-color: #83deff;
+  color: white;
+  font-weight: bold;
+  border-color: #83deff;
+}
+
 
 .nav-btn {
   border: none;
@@ -138,7 +152,6 @@ body {
   height: 54px;
   object-fit: contain;
   cursor: pointer;
-  margin-left: -50px;
 }
 
 /* Centered login box */
@@ -236,25 +249,39 @@ body {
   width: 40px;
   border-radius: 50%;
   display: flex;
-  align-items: center;
-  justify-content: center;
+
   color: #83deff;
   cursor: pointer;
-  margin-right: 20%;
+  padding: 10px 10px;
 }
+.user-name {
+  font-weight: bold;
+  color: #0076a2;
+  cursor: pointer;
+  padding: 10px 20px;
+  border: 1px solid #83deff;
+  border-radius: 20px;
+  background-color: #e0f7ff;
+  transition: background-color 0.3s;
+}
+
+.user-name:hover {
+  background-color: #bdf0ff;
+}
+
 .menu-dropdown {
   position: absolute;
   right: 0;
-  top: 2.5rem;
+  top: 3.5rem;
   background: white;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
   list-style: none;
-  margin: 0;
+  margin-right: 1rem;
   padding: 0.5rem 0;
 }
 .menu-dropdown li {
-  padding: 0.5rem 1rem;
+  padding: 0.25rem 2rem;
   cursor: pointer;
 }
 .menu-dropdown li:hover {
@@ -380,6 +407,7 @@ body {
   color: #1e293b;
 }
 
+
 /* generate button */
 .generate-btn {
   padding: 0.75rem 2rem;
@@ -427,6 +455,10 @@ body {
   overflow-x: hidden;
 }
 
+.sidebar-icon {
+  cursor: pointer;
+}
+
 .sidebar:not(.active) {
   width: 50px;
   padding: 20px 10;
@@ -436,18 +468,12 @@ body {
   display: none; /* Hide buttons when sidebar is not active */
 }
 
-.sidebar .list-icon {
-  color: #0077a2;
-  font-size: 25px;
-  padding-left: 3px;
-  cursor: pointer;
-}
-
 .nav-button {
   display: block;
   background-color: #f5f5f5; /* blue */
   color: #0076a2;
-  border-color: #0076a2;
+  border: 1px solid #0076a2;
+
   padding: 10px 16px;
   margin: 10px auto;
   margin-top: 20px;
@@ -460,20 +486,22 @@ body {
 /* Questionnaire */
 
 .main-content {
+  width: 100vw; /* Adjust based on sidebar width */
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: hidden;
 }
 .quiz-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: auto;
+  margin: 20px auto 0;
   margin-top: 20px;
-  width: 800px;
-  height: 570px;
+  width: 90%;
+  max-width: 800px; /* Limit width for better readability */
+  min-height: 570px;
+  height: auto;
   background-color: #f5f5f5;
   padding: 10px;
   border-radius: 20px;
@@ -574,6 +602,18 @@ input[type="radio"] {
   transition: background-color 0.3s; /* Smooth hover transition */
   width: 230px;
 }
+/* Centered bot overview box */
+.bot-overview-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
 
 .bot-overview-page {
   background-color: #f5f5f5;
@@ -639,20 +679,26 @@ input[type="radio"] {
   font-size: 14px;
   color: #333;
 }
-
 .bottom-bar {
+  left: 0;
+  bottom: 0;
   width: 100%;
   background-color: #f5f5f5;
-  color: #000;
+  color: #000000;
   padding: 10px;
   text-align: center;
-  margin-top: 2rem;
+}
+
+.bottom-bar a {
+  color: #000000;
+  text-decoration: none; 
 }
 
 .bottom-bar ul {
   list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
+  text-align: center; 
 }
 
 .bottom-bar li {
@@ -660,27 +706,6 @@ input[type="radio"] {
   margin-right: 20px;
 }
 
-.bottom-bar a {
-  color: #000;
-  text-decoration: none;
-}
-
 .bottom-bar a:hover {
-  color: #888;
-}
-
-.nav-button {
-  display: block;
-  background-color: #0076a2;
-  color: white;
-  padding: 10px 16px;
-  border-radius: 6px;
-  text-align: center;
-  margin-bottom: 10px;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.nav-button:hover {
-  background-color: #005f86;
+  color: #ccc;
 }

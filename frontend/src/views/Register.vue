@@ -13,16 +13,36 @@
       <h2>Registriere dich</h2>
       <form @submit.prevent="handleRegister">
         <label for="name">Vollständiger Name</label>
-        <input id="name" type="text" placeholder="Max Mustermann" v-model="name" />
+        <input
+          id="name"
+          type="text"
+          placeholder="Max Mustermann"
+          v-model="name"
+        />
 
         <label for="email">E-Mail-Adresse</label>
-        <input id="email" type="email" placeholder="email@example.de" v-model="email" />
+        <input
+          id="email"
+          type="email"
+          placeholder="email@example.de"
+          v-model="email"
+        />
 
         <label for="password">Passwort</label>
-        <input id="password" type="password" placeholder="**********" v-model="password" />
+        <input
+          id="password"
+          type="password"
+          placeholder="**********"
+          v-model="password"
+        />
 
         <label for="confirmPassword">Passwort bestätigen</label>
-        <input id="confirmPassword" type="password" placeholder="**********" v-model="confirmPassword" />
+        <input
+          id="confirmPassword"
+          type="password"
+          placeholder="**********"
+          v-model="confirmPassword"
+        />
 
         <p v-if="error" class="error-msg">{{ error }}</p>
 
@@ -54,7 +74,7 @@ onMounted(async () => {
   try {
     const res = await axios.get('/api/me', { withCredentials: true })
     if (res.data.user) {
-      router.push('/create')
+      router.push('/questionnaire1')
     }
   } catch (err) {
     console.error('Fehler beim Session-Check:', err)
@@ -77,7 +97,9 @@ async function handleRegister() {
     })
 
     if (response.data.message) {
-      router.push('/login')
+      // ✅ Set 'user' in localStorage and redirect to questionnaire
+      localStorage.setItem('user', 'true')
+      router.push('/questionnaire1')
     }
   } catch (err) {
     if (err.response && err.response.data?.error) {

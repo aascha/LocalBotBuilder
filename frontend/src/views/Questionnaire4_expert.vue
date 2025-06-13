@@ -1,24 +1,30 @@
 <template>
   <div class="questionnaire"></div>
-  <header class="header">
+  <header class="nav-bar">
     <div @click="goToLanding" class="logo">
       <img src="../assets/logo_full.svg" alt="Logo" class="top-logo" />
     </div>
 
-    <font-awesome-icon icon="circle-user" class="user-icon" @click="Logout" />
+    <div class="avatar-icon" @click="openMenu">
+      <font-awesome-icon :icon="['fas', 'circle-user']" class="user-icon" />
+      <ul v-if="menuOpen" class="menu-dropdown">
+        <li @click="logout">Logout</li>
+      </ul>
+    </div>
   </header>
   <div class="side-main-wrapper">
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar">
       <div>
-        <font-awesome-icon
-          icon="list"
-          class="list-icon"
+        <img
+          src="../assets/sidebar-icon.svg"
+          class="sidebar-icon"
+          alt="Menu"
           @click.stop="toggleSidebar"
         />
       </div>
-      <router-link to="/create" class="nav-button">Bot erstellen</router-link>
-      <router-link to="/botoverview" class="nav-button">Meine Bots</router-link>
+      <button class="nav-button" @click="goToBuilder">Bot erstellen</button>
+      <button class="nav-button">Meine Bots</button>
     </aside>
     <!-- Main Content -->
     <main class="main-content">
@@ -81,7 +87,11 @@
               v-model="selectedOption"
               @change="updateSelectedOption(options[3])"
             />
-            <span><b>Benutzerdefiniert</b> </span>
+            <span
+              ><b>DeepSeek V2</b> <br /><span class="option-description"
+                >30-38 GB RAM</span
+              ></span
+            >
           </label>
           <div class="quiz-button-container">
             <button class="continue-button" @click="goToNextQuestion">
@@ -111,6 +121,7 @@ const options = [
 
 const selectedOptionValue = ref(null);
 const selectedOptionId = ref(null);
+const menuOpen = ref(false);
 
 const updateSelectedOption = (option) => {
   selectedOptionValue.value = option.value;
@@ -125,8 +136,10 @@ function goToLanding() {
 function goToBuilder() {
   router.push("/builder");
 }
-
-function Logout() {
+function openMenu() {
+  menuOpen.value = !menuOpen.value;
+}
+function logout() {
   router.push("/login");
 }
 

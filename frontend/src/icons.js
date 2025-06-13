@@ -9,6 +9,8 @@ import {
   faBars,
   faList,
   faCaretDown,
+  faCircleArrowRight,
+  faCircleArrowUp,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -19,7 +21,9 @@ library.add(
   faBars,
   faCircleUser,
   faList,
-  faCaretDown
+  faCaretDown,
+  faCircleArrowRight,
+  faCircleArrowUp
 );
 
 export { FontAwesomeIcon };
