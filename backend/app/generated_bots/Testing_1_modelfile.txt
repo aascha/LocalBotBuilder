@@ -1,0 +1,4 @@
+FROM qwen
+SYSTEM "Respond using short, clear, and simple language that is easy for anyone to understand. TEsting 1"
+PARAMETER temperature 0.7
+PARAMETER num_ctx 2048

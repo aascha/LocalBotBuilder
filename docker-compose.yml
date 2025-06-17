@@ -1,0 +1,37 @@
+version: '3.9'  # Optional: can be removed if you're using Compose v2+
+
+services:
+  bot_creator:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./backend:/app  # Enables live reload during development
+    depends_on:
+      - ollama
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app            # Sync source code
+      - /app/node_modules          # Avoid conflicts with host's node_modules
+    working_dir: /app
+    command: npm run dev -- --host          # Cleaned syntax
+
+  ollama:
+    image: ollama/ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama  # Persists downloaded models
+
+volumes:
+  ollama_data:

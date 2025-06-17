@@ -1,0 +1,4 @@
+FROM qwen
+SYSTEM "Use everyday language and relatable examples to make your answers easy to grasp. TEsting 1zedezffezegzzzzzz"
+PARAMETER temperature 0.7
+PARAMETER num_ctx 2048

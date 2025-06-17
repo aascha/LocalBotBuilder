@@ -1,0 +1,4 @@
+FROM mistral
+SYSTEM "Respond using short, clear, and simple language that is easy for anyone to understand."
+PARAMETER temperature 0.7
+PARAMETER num_ctx 2048

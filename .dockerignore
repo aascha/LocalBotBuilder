@@ -1,0 +1,13 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.log
+.env
+# Don't ignore these unless you're copying from a subdir
+# Dockerfile
+# docker-compose.yml
+node_modules
+.vscode

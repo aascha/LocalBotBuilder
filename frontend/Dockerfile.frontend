@@ -1,0 +1,15 @@
+# Dockerfile.frontend
+
+FROM node:18
+
+WORKDIR /app
+
+# This layer must contain BOTH package.json and package-lock.json
+COPY package.json package-lock.json ./
+
+RUN npm install
+
+# Then copy the rest
+COPY . .
+
+CMD ["npm", "run", "dev"]
